@@ -55,27 +55,34 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let file_padding = succeeded
         .iter()
-        .fold(0, |len, ll| std::cmp::max(len, ll.file.len())) as usize;
+        .fold(0, |len, ll| std::cmp::max(len, ll.file.len()));
+    let file_padding = std::cmp::max(file_padding, 4) as usize;
 
-    let length_padding = (succeeded
+    let length_padding = succeeded
         .iter()
         .fold(0, |len, ll| std::cmp::max(len, ll.length))
-        .log10()
-        + 1) as usize;
+        .log10();
+    let length_padding = std::cmp::max(length_padding + 1, 6) as usize;
 
-    let index_padding = (succeeded
+    let index_padding = succeeded
         .iter()
         .fold(0, |len, ll| std::cmp::max(len, ll.index))
-        .log10()
-        + 1) as usize;
+        .log10();
+    let index_padding = std::cmp::max(index_padding + 1, 5) as usize;
 
+    println!(
+        "{file:<file_padding$} {length:<length_padding$} {index:<index_padding$}",
+        file = "File",
+        length = "Length",
+        index = "Index"
+    );
     for LineLength {
         file,
         length,
         index,
     } in &succeeded
     {
-        println!("{file:file_padding$} {length:length_padding$} {index:index_padding$}");
+        println!("{file:<file_padding$} {length:>length_padding$} {index:>index_padding$}");
     }
 
     for err in &failed {
